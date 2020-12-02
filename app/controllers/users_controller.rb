@@ -11,6 +11,9 @@ class UsersController < ApplicationController
   def create
     @user = User.new(user_params)   # Not the final implementation!
     if @user.save
+      reset_session
+      # Allow users to automatically log themselves in after signing up.
+      log_in @user
       flash[:success] = "Welcome to the Sample App!"
       redirect_to @user
       # Can also be written as:
