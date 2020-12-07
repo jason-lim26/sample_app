@@ -3,17 +3,19 @@ class SessionsController < ApplicationController
   end
   
   def create
-    user = User.find_by(email: params[:session][:email].downcase)
-    if user&.authenticate(params[:session][:password])
+    @user = User.find_by(email: params[:session][:email].downcase)
+    if @user&.authenticate(params[:session][:password])
       # Log the user in and redirect to the user's show page
       
       # Use 'reset_session' to prevent session fixation attack (session is 
       # reset immediately before logging in).
       reset_session
-      log_in user
-      # Rais automatically converts this to the route for the user's profile 
+      # Options to remember the user.
+      params[:session][:remember_me] == '1' ? remember(@user) : forget(@user)  
+      log_in @user
+      # Rails automatically converts this to the route for the user's profile 
       # page (seen in Section 7.4.1).
-      redirect_to user
+      redirect_to @user
     else
       # Create an error message
       
@@ -25,7 +27,8 @@ class SessionsController < ApplicationController
   end
   
   def destroy
-    log_out
+    # Log out completely if user is using multiple browser at the same time.
+    log_out if logged_in?
     redirect_to root_url
   end
 end

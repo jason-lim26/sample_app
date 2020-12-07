@@ -42,9 +42,33 @@ class UsersLoginTest < ActionDispatch::IntegrationTest
     delete logout_path
     assert_not is_logged_in?
     assert_redirected_to root_url
+    # Simulate a user clicking logout in a second window (for the two subtleties).
+    delete logout_path
     follow_redirect!
     assert_select "a[href=?]", login_path
     assert_select "a[href=?]", logout_path, count: 0 # I still don't understand
     assert_select "a[href=?]", user_path(@user), count: 0  
+  end
+  
+  test "authenticated? should return false for a user with nil digest" do
+    assert_not @user.authenticated?('')
+  end
+  
+  test "login with remembering" do
+    log_in_as(@user, remember_me: '1')
+    # The application currently doesn’t have any way to access the virtual 
+    # remember_token attribute in the integration test. 
+    
+    # However using a special test method called assigns, you can access 
+    # instance variables defined in the controller.
+    assert_equal cookies['remember_token'], assigns(:user).remember_token
+  end
+  
+  test "login without remembering" do 
+    # Log in to set the cookie.
+    log_in_as(@user, remember_me: '1')
+    # Log in again and verify that the cookie is deleted.
+    log_in_as(@user, remember_me: '0')
+    assert_empty cookies[:remember_token]
   end
 end
