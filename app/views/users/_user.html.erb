@@ -1,0 +1,11 @@
+<!-- Partial to render user's gravatar -->
+<li>
+  <%= gravatar_for user, size: 50 %>
+  <%= link_to user.name, user %>
+  <% if current_user.admin? && !current_user?(user) %>
+    <!-- Note that the 'method: :delete' argument arranges for the link to issue
+         the necessary DELETE request. -->
+    | <%= link_to "delete", user, method: :delete,
+                                  data: { confirm: "You sure?" } %>
+  <% end %>
+</li>
