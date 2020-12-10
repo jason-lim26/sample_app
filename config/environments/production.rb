@@ -13,6 +13,50 @@ Rails.application.configure do
   # Full error reports are disabled and caching is turned on.
   config.consider_all_requests_local       = false
   config.action_controller.perform_caching = true
+  # <-------------------------------------------------------------------------->
+  # After getting account activations working in development, we have to 
+  # configure our application so that it can actually send email in production. 
+  # We’ll first get set up with a free service to send email, and then configure
+  # and deploy our application.
+  #
+  # To send email in production, we’ll use SendGrid, which is available as an 
+  # add-on at Heroku for verified accounts. (This requires adding credit card 
+  # information to your Heroku account, but there is no charge when verifying an 
+  # account.) For our purposes, the “starter” tier (which as of this writing is 
+  # limited to 400 emails a day but costs nothing) is the best fit. We can add 
+  # it to our app as follows:
+  #
+  # $ heroku addons:create sendgrid:starter
+  #
+  # To configure our application to use SendGrid, we need to fill out the SMTP 
+  # settings for our production environment. As shown in Listing 11.44, you will
+  # also have to define a host variable with the address of your production
+  # website. One trick for finding the host name of your Herouku app is to use 
+  # the grep utility on the Git configuration file:
+  #
+  # $ grep heroku .git/config
+  #
+  # The final step is to use the username and password referenced in Listing 
+  # 11.44 to create an API Key, which will allow the Heroku account we just 
+  # created to send email in production. To get the necessary login credentials, 
+  # we can use the config:get command at Heroku, as shown below:
+  #
+  # $ heroku config:get SENDGRID_USERNAME
+  # <email username>
+  # $ heroku config:get SENDGRID_PASSWORD
+  # <SendGrid password>
+  # <-------------------------------------------------------------------------->
+  host = 'secret-spire-42511.herokuapp.com'
+  config.action_mailer.default_url_options = { host: host }
+  ActionMailer::Base.smtp_settings = {
+    :address        => 'smtp.sendgrid.net',
+    :port           => '587',
+    :authentication => :plain,
+    :user_name      => ENV['SENDGRID_USERNAME'],
+    :password       => ENV['SENDGRID_PASSWORD'],
+    :domain         => 'heroku.com',
+    :enable_starttls_auto => true
+  }
 
   # Ensures that a master key has been made available in either ENV["RAILS_MASTER_KEY"]
   # or in config/master.key. This key is used to decrypt credentials (and other encrypted files).
