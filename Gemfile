@@ -2,6 +2,10 @@ source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 gem 'rails',      '6.0.3.4'
+# From $ sudo apt-get -y install imagemagick
+gem 'image_processing',           '1.9.3'
+gem 'mini_magick',                '4.9.5'
+gem 'active_storage_validations', '0.8.9'
 gem 'bcrypt',         '3.1.13'
 gem 'faker',      '2.11.0'
 gem 'will_paginate',  '3.3.0'
@@ -39,6 +43,7 @@ end
 
 group :production do
   gem 'pg', '1.2.3'
+  gem 'aws-sdk-s3', '1.46.0', require: false
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

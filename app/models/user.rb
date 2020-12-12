@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  has_many :microposts, dependent: :destroy
   # Common regex for email validation
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
     
@@ -75,6 +76,15 @@ class User < ApplicationRecord
   # Returns true if a password reset has expired.
   def password_reset_expired?
     reset_sent_at < 2.hours.ago
+  end
+  
+  # Defines a proto-feed.
+  # See "Following users" for the full implementation.
+  def feed
+    Micropost.where("user_id = ?", id)
+    # The question mark in "user_id = ?" ensures that 'id' is properly escaped
+    # before being included in the underlying SQL query, thereby avoiding a
+    # serious security hole called SQL Injection.
   end
   
   private

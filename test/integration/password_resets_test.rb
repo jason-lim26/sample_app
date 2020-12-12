@@ -77,5 +77,8 @@ class PasswordResetsTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     follow_redirect!
     assert_match /expired/i, response.body
+    
+    # There's an an exercise which I missed (Chapter 12 last exercise):
+  
   end
 end
