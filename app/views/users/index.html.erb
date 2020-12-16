@@ -4,9 +4,7 @@
 <%= will_paginate %>
 
 <ul class="users">
-  <% @users.each do |user| %>
-    <%= render @users %>
-  <% end %>
+  <%= render @users %>
 </ul>
 
 <!--The 'paginate' method takes a hash argument with key :page and value to the

@@ -90,11 +90,10 @@ class User < ApplicationRecord
   # See "Following users" for the full implementation.
   def feed
     # Don't really understand this part.
-    part_of_feed = "relationships.follower_id = :id or microposts.user_id = :id"
-    Micropost.left_outer_joins(user: :followers).where(part_of_feed, { id: id })
-    # The question mark in "user_id = ?" ensures that 'id' is properly escaped
-    # before being included in the underlying SQL query, thereby avoiding a
-    # serious security hole called SQL Injection.
+    following_ids = "SELECT followed_id FROM relationships
+                     WHERE  follower_id = :user_id"
+    Micropost.where("user_id IN (#{following_ids})
+                     OR user_id = :user_id", user_id: id)
   end
   
   # Follows a user.
